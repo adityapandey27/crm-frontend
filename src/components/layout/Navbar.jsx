@@ -67,8 +67,8 @@ export default function Navbar({ onMenuClick }) {
         onClick={logout}
         className="flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-600 hover:shadow-lg transition"
       >
-        <LogOut size={16} />
-        Logout
+        <LogOut size={18} />
+        {/* Logout */}
       </button>
     </header>
   );

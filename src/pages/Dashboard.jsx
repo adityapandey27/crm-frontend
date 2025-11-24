@@ -140,7 +140,7 @@ export default function Dashboard() {
         {['1', '7', '30', '365'].map(r => (
           <button
             key={r}
-            onClick={() => setRangePreset(r)}
+            onClick={() => {setRangePreset(r), loadAll()}}
             className={`px-4 py-2 rounded-lg border text-sm ${
               rangePreset === r ? 'bg-indigo-600 text-white' : 'bg-white'
             }`}
@@ -160,6 +160,12 @@ export default function Dashboard() {
         >
           Custom
         </button>
+          {/* <button
+            onClick={loadAll}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+          >
+            Apply
+          </button> */}
       </div>
 
       {rangePreset === 'custom' && (
@@ -176,14 +182,9 @@ export default function Dashboard() {
             onChange={e => setCustomEnd(e.target.value)}
             className="border p-2 rounded-lg"
           />
-          <button
-            onClick={loadAll}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
-          >
-            Apply
-          </button>
         </div>
       )}
+        
 
       {/* CHARTS SECTION */}
       <div className="flex flex-col lg:flex-row gap-6 w-full">
@@ -266,7 +267,7 @@ export default function Dashboard() {
       </div>
 
       {/* Upcoming Follow-ups */}
-      <div className="w-full mt-8 bg-white p-5 rounded-xl shadow-md">
+      {/* <div className="w-full mt-8 bg-white p-5 rounded-xl shadow-md">
         <h2 className="font-semibold mb-4">Upcoming Follow-ups</h2>
         {upcoming.length === 0 && <p className="text-gray-500">No follow-ups in next 7 days.</p>}
 
@@ -281,7 +282,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

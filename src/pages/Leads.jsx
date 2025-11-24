@@ -39,6 +39,7 @@ export default function Leads() {
   // follow up
   const [todayFollowups, setTodayFollowups] = useState([]);
   const [followLoading, setFollowLoading] = useState(false);
+  
 
   // debounce
   const debounceRef = useRef(null);
@@ -215,12 +216,19 @@ export default function Leads() {
             <option>Converted</option>
           </select>
 
-          <input
-            placeholder="Source"
-            value={sourceFilter}
-            onChange={(e) => setSourceFilter(e.target.value)}
-            className="input"
-          />
+         
+
+          <select
+          value={stageFilter}
+          onChange={(e) => { setStageFilter(e.target.value);  }}
+          className="rounded-full px-4 py-2 border bg-white/60 border-white/10"
+        >
+          <option value="">All status</option>
+          <option value="Upcoming">Upcoming</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+      
+        </select>
 
           <div className="flex gap-2">
             <input
@@ -353,7 +361,7 @@ export default function Leads() {
 <div 
 // style={{maxWidth:"20%",minWidth:"50%",overflow:"auto"}}
 //  className=" rounded-2xl glass"
- className="w-[50%] sm:w-full overflow-auto rounded-2xl glass"
+ className="w-[100%] sm:w-full overflow-auto rounded-2xl glass"
  >
   <table className="min-w-max w-[100%] text-left">
     <thead className="border-b bg-white/50">

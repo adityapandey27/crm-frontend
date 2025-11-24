@@ -26,7 +26,6 @@ const STATUS_COLORS = {
   Upcoming: "bg-indigo-100 text-indigo-800",
   Completed: "bg-emerald-100 text-emerald-800",
   Cancelled: "bg-red-100 text-red-800",
-  Missed: "bg-amber-100 text-amber-800",
 };
 
 function StatusPill({ status }) {
@@ -38,76 +37,6 @@ function StatusPill({ status }) {
   );
 }
 
-function AppointmentCard({ appt, onView, onEdit, onDelete, onMarkDone }) {
-  const dt = new Date(appt.date);
-  const date = dt.toLocaleDateString();
-  const time = dt.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return (
-    <div className="p-4 rounded-2xl bg-white/80 shadow-md border border-white/20 space-y-3">
-      <div className="flex justify-between items-start">
-        <div>
-          <div className="font-semibold text-lg">
-            {appt.leadId?.name || "Unknown"}
-          </div>
-          <div className="text-sm text-muted">
-            {appt.leadId?.phone || appt.leadId?.email || "—"}
-          </div>
-        </div>
-        <div className="text-right space-y-1">
-          <div className="text-sm text-gray-700">Date: {date}</div>
-          <div className="text-sm text-gray-700">Time: {time}</div>
-          <div className="mt-2">
-           Status: <StatusPill status={appt.status || "Upcoming"} />
-          </div>
-        </div>
-      </div>
-
-      {appt.reason && (
-        <div>
-          <div className="text-sm font-medium text-muted">Reason</div>
-          <div className="text-sm">{appt.reason}</div>
-        </div>
-      )}
-
-      {appt.note && (
-        <div>
-          <div className="text-sm font-medium text-muted">Notes</div>
-          <div className="text-sm">{appt.note}</div>
-        </div>
-      )}
-
-      <div className="flex justify-end gap-3 mt-2">
-        <button
-          onClick={() => onView(appt)}
-          className="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm"
-        >
-          Open Lead
-        </button>
-        <button
-          onClick={() => onEdit(appt)}
-          className="px-3 py-1 rounded-lg bg-yellow-500 text-white text-sm"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => onMarkDone(appt._id)}
-          className="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm"
-        >
-          Mark Done
-        </button>
-        <button
-          onClick={() => onDelete(appt._id)}
-          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
-}
 
 export default function Appointments() {
   const nav = useNavigate();
@@ -293,6 +222,19 @@ export default function Appointments() {
     return arr;
   }, [calendarData, appointments]);
 
+  function Truncate({ text = "", limit = 20 }) {
+    if (!text) return "—";
+
+    const truncated =
+      text.length > limit ? text.substring(0, limit) + "..." : text;
+
+    return (
+      <span title={text} className="cursor-pointer">
+        {truncated}
+      </span>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -310,20 +252,20 @@ export default function Appointments() {
       <div className="bg-white/40 backdrop-blur-xl rounded-xl p-4 border border-white/10 flex flex-col md:flex-row md:items-center md:gap-4 gap-3">
         <input
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {setSearch(e.target.value) ; applyFilters(); }}
           placeholder="Search by lead or reason"
           className="rounded-full px-4 py-2 border bg-white/60 border-white/10 w-full md:w-1/3"
         />
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => { setStatusFilter(e.target.value); applyFilters(); }}
           className="rounded-full px-4 py-2 border bg-white/60 border-white/10"
         >
           <option value="">All status</option>
           <option value="Upcoming">Upcoming</option>
           <option value="Completed">Completed</option>
           <option value="Cancelled">Cancelled</option>
-          <option value="Missed">Missed</option>
+      
         </select>
 
         <div className="flex items-center gap-2">
@@ -331,14 +273,14 @@ export default function Appointments() {
           <input
             type="date"
             value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            onChange={(e) => {setDateFrom(e.target.value); applyFilters(); }}
             className="rounded px-3 py-2 border bg-white/60 border-white/10"
           />
           <label className="text-sm text-muted">To</label>
           <input
             type="date"
             value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
+            onChange={(e) =>{setDateTo(e.target.value); applyFilters(); }}
             className="rounded px-3 py-2 border bg-white/60 border-white/10"
           />
         </div>
@@ -347,19 +289,19 @@ export default function Appointments() {
           <label className="text-sm text-muted">Sort</label>
           <select
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+            onChange={(e) => {setSortOrder(e.target.value);applyFilters(); }}
             className="rounded-full px-3 py-2 border bg-white/60 border-white/10"
           >
             <option value="asc">Date asc</option>
             <option value="desc">Date desc</option>
           </select>
 
-          <button
+          {/* <button
             onClick={applyFilters}
             className="px-3 py-2 rounded-lg btn-accent text-white"
           >
             Apply
-          </button>
+          </button> */}
           <button
             onClick={clearFilters}
             className="px-3 py-2 rounded-lg bg-gray-200"
@@ -371,7 +313,7 @@ export default function Appointments() {
 
       {/* TABS */}
       <div className="flex gap-3 text-sm">
-        {["all","today", "tomorrow", "upcoming", "past", ].map((t) => (
+        {["all", "today", "tomorrow", "upcoming", "past"].map((t) => (
           <button
             key={t}
             onClick={() => {
@@ -387,168 +329,103 @@ export default function Appointments() {
         ))}
       </div>
 
-      {/* <>
-        {loading && (
+      <div className="w-[50%] sm:w-full overflow-auto rounded-2xl glass">
+        {loading ? (
           <div className="p-6 card-glass">Loading appointments...</div>
-        )}
+        ) : (
+          <table className="min-w-max w-[100%] text-left">
+            <thead className="border-b bg-white/50">
+              <tr className="text-sm text-muted">
+                <th className="p-4 whitespace-nowrap">Lead</th>
+                <th className="whitespace-nowrap">Date</th>
+                <th className="whitespace-nowrap">Time</th>
+                <th className="whitespace-nowrap">Status</th>
+                <th className="whitespace-nowrap">Reason</th>
+                <th className="whitespace-nowrap">Notes</th>
+                {/* <th className="text-right pr-4 whitespace-nowrap">Actions</th> */}
+              </tr>
+            </thead>
 
-        {!loading && appointments.length === 0 && (
-          <div className="p-6 card-glass text-muted">No appointments found</div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {appointments.map((a) => (
-            <AppointmentCard
-              key={a._id}
-              appt={a}
-              onView={() => handleViewLead(a)}
-              onEdit={() => handleEdit(a)}
-              onDelete={() => handleDelete(a._id)}
-              onMarkDone={() => handleMarkDone(a._id)}
-            />
-          ))}
-        </div>
-      </> */}
-
-      {/* <div className="w-[80%] sm:w-full overflow-x-auto rounded-2xl">
-  <table className="min-w-[700px] w-full text-left">
-    <thead>
-      <tr className="border-b text-sm text-gray-600">
-        <th className="p-3">Lead</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {appointments.map((a) => (
-        <tr key={a._id} className="border-b hover:bg-gray-50">
-          <td className="p-3">{a.leadId?.name}</td>
-          <td>{new Date(a.date).toLocaleDateString()}</td>
-          <td>
-            {new Date(a.date).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </td>
-          <td><StatusPill status={a.status} /></td>
-          <td className="space-x-2">
-            <button onClick={() => onView(a)} className="text-indigo-600">
-              View
-            </button>
-            <button onClick={() => onEdit(a)} className="text-amber-600">
-              Edit
-            </button>
-            <button
-              onClick={() => onMarkDone(a._id)}
-              className="text-green-600"
-            >
-              Done
-            </button>
-            <button
-              onClick={() => onDelete(a._id)}
-              className="text-red-600"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div> */}
-
-<div className="w-[50%] sm:w-full overflow-auto rounded-2xl glass">
-  <table className="min-w-max w-[100%] text-left">
-    <thead className="border-b bg-white/50">
-      <tr className="text-sm text-muted">
-        <th className="p-4 whitespace-nowrap">Lead</th>
-        <th className="whitespace-nowrap">Date</th>
-        <th className="whitespace-nowrap">Time</th>
-        <th className="whitespace-nowrap">Status</th>
-        <th className="whitespace-nowrap">Reason</th>
-        <th className="whitespace-nowrap">Notes</th>
-        <th className="text-right pr-4 whitespace-nowrap">Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {appointments.map((a) => {
-        const dt = new Date(a.date);
-        const date = dt.toLocaleDateString();
-        const time = dt.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-
-        return (
-          <tr
-            key={a._id}
-            className="border-b hover:bg-white/40 transition-colors"
-          >
-            <td className="p-4 whitespace-nowrap">
-              <div className="font-medium">
-                {a.leadId?.name || "Unknown"}
+            {!loading && appointments.length === 0 ? (
+              <div className="p-6 card-glass text-muted">
+                No appointments found
               </div>
-              <div className="text-xs text-muted">
-                {a.leadId?.phone || a.leadId?.email || "—"}
-              </div>
-            </td>
+            ) : (
+              <tbody>
+                {appointments.map((a) => {
+                  const dt = new Date(a.date);
+                  const date = dt.toLocaleDateString();
+                  const time = dt.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
 
-            <td className="whitespace-nowrap">{date}</td>
-            <td className="whitespace-nowrap">{time}</td>
+                  return (
+                    <tr
+                      key={a._id}
+                      className="border-b hover:bg-white/40 transition-colors"
+                    >
+                      <td className="p-4 whitespace-nowrap">
+                        <div className="font-medium">
+                          {a.leadId?.name || "Unknown"}
+                        </div>
+                        <div className="text-xs text-muted">
+                          {a.leadId?.phone || a.leadId?.email || "—"}
+                        </div>
+                      </td>
 
-            <td className="whitespace-nowrap">
-              <StatusPill status={a.status} />
-            </td>
+                      <td className="whitespace-nowrap">{date}</td>
+                      <td className="whitespace-nowrap">{time}</td>
 
-            <td className="whitespace-nowrap">
-              {a.reason || "—"}
-            </td>
+                      <td className="whitespace-nowrap">
+                        <StatusPill status={a.status} />
+                      </td>
 
-            <td className="whitespace-nowrap">
-              {a.note || "—"}
-            </td>
+                      <td className="whitespace-nowrap">
+                        <Truncate text={a.problem} limit={25} />
+                      </td>
 
-            <td className="text-right pr-4 space-x-2 whitespace-nowrap">
-              <button
-                onClick={() => onView(a)}
-                className="px-3 py-1 bg-blue-500 text-white rounded-md"
-              >
-                View
-              </button>
+                      <td className="whitespace-nowrap">
+                        <Truncate text={a.notes} limit={25} />
+                      </td>
 
-              <button
-                onClick={() => onEdit(a)}
-                className="px-3 py-1 bg-yellow-500 text-white rounded-md"
-              >
-                Edit
-              </button>
+                      {/* <td className="text-right pr-4 space-x-2 whitespace-nowrap">
+                        <button
+                          onClick={() => onView(a)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-md"
+                        >
+                          View
+                        </button>
 
-              <button
-                onClick={() => onMarkDone(a._id)}
-                className="px-3 py-1 bg-emerald-600 text-white rounded-md"
-              >
-                Done
-              </button>
+                        <button
+                          onClick={() => onEdit(a)}
+                          className="px-3 py-1 bg-yellow-500 text-white rounded-md"
+                        >
+                          Edit
+                        </button>
 
-              <button
-                onClick={() => onDelete(a._id)}
-                className="px-3 py-1 bg-red-500 text-white rounded-md"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        );
-      })}
-    </tbody>
-  </table>
-</div>
+                        <button
+                          onClick={() => onMarkDone(a._id)}
+                          className="px-3 py-1 bg-emerald-600 text-white rounded-md"
+                        >
+                          Done
+                        </button>
 
-
+                        <button
+                          onClick={() => onDelete(a._id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded-md"
+                        >
+                          Delete
+                        </button>
+                      </td> */}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            )}
+          </table>
+        )}
+      </div>
     </div>
   );
 }
