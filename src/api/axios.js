@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // baseURL: process.env.REACT_APP_API_URL || ' http://localhost:4000/api',
-  baseURL: process.env.REACT_APP_API_URL || 'https://crm-backend-f2junutv0-aditya-pandeys-projects-891f452f.vercel.app/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://crm-backend-dffk7j03m-aditya-pandeys-projects-891f452f.vercel.app/api',
   
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
