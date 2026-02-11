@@ -39,7 +39,6 @@ export default function Leads() {
   // follow up
   const [todayFollowups, setTodayFollowups] = useState([]);
   const [followLoading, setFollowLoading] = useState(false);
-  
 
   // debounce
   const debounceRef = useRef(null);
@@ -104,7 +103,7 @@ export default function Leads() {
       loadLeads();
     } catch (err) {
       alert(
-        err?.response?.data?.message || err.message || "Stage update failed"
+        err?.response?.data?.message || err.message || "Stage update failed",
       );
     }
   };
@@ -157,8 +156,8 @@ export default function Leads() {
               {followLoading
                 ? "Loading..."
                 : todayFollowups.length === 0
-                ? "No follow-ups scheduled for today"
-                : `${todayFollowups.length} follow-ups today`}
+                  ? "No follow-ups scheduled for today"
+                  : `${todayFollowups.length} follow-ups today`}
             </p>
           </div>
         </div>
@@ -216,19 +215,18 @@ export default function Leads() {
             <option>Converted</option>
           </select>
 
-         
-
           <select
-          value={stageFilter}
-          onChange={(e) => { setStageFilter(e.target.value);  }}
-          className="rounded-full px-4 py-2 border bg-white/60 border-white/10"
-        >
-          <option value="">All status</option>
-          <option value="Upcoming">Upcoming</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-      
-        </select>
+            value={stageFilter}
+            onChange={(e) => {
+              setStageFilter(e.target.value);
+            }}
+            className="rounded-full px-4 py-2 border bg-white/60 border-white/10"
+          >
+            <option value="">All status</option>
+            <option value="Upcoming">Upcoming</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
 
           <div className="flex gap-2">
             <input
@@ -355,77 +353,72 @@ export default function Leads() {
         ))}
       </div> */}
 
+      {/* Responsive Scrollable Table (works for mobile + desktop) */}
+      <div
+        // style={{maxWidth:"20%",minWidth:"50%",overflow:"auto"}}
+        //  className=" rounded-2xl glass"
+        className="w-[100%] sm:w-full overflow-auto rounded-2xl glass"
+      >
+        <table className="min-w-max w-[100%] text-left">
+          <thead className="border-b bg-white/50">
+            <tr className="text-sm text-muted">
+              <th className="p-4 whitespace-nowrap">Name</th>
+              <th className="whitespace-nowrap">Email</th>
+              <th className="whitespace-nowrap">Phone</th>
+              <th className="whitespace-nowrap">Source</th>
+              <th className="whitespace-nowrap">Stage</th>
+              <th className="whitespace-nowrap">Created</th>
+              <th className="text-right pr-4 whitespace-nowrap">Actions</th>
+            </tr>
+          </thead>
 
+          <tbody>
+            {leads.map((l) => (
+              <tr
+                key={l._id}
+                className="border-b hover:bg-white/40 transition-colors"
+              >
+                <td className="p-4 whitespace-nowrap">
+                  <div className="font-medium">{l.name}</div>
+                </td>
 
-{/* Responsive Scrollable Table (works for mobile + desktop) */}
-<div 
-// style={{maxWidth:"20%",minWidth:"50%",overflow:"auto"}}
-//  className=" rounded-2xl glass"
- className="w-[100%] sm:w-full overflow-auto rounded-2xl glass"
- >
-  <table className="min-w-max w-[100%] text-left">
-    <thead className="border-b bg-white/50">
-      <tr className="text-sm text-muted">
-        <th className="p-4 whitespace-nowrap">Name</th>
-        <th className="whitespace-nowrap">Email</th>
-        <th className="whitespace-nowrap">Phone</th>
-        <th className="whitespace-nowrap">Source</th>
-        <th className="whitespace-nowrap">Stage</th>
-        <th className="whitespace-nowrap">Created</th>
-        <th className="text-right pr-4 whitespace-nowrap">Actions</th>
-      </tr>
-    </thead>
+                <td className="whitespace-nowrap">{l.email}</td>
+                <td className="whitespace-nowrap">{l.phone}</td>
+                <td className="whitespace-nowrap">{l.source || "Website"}</td>
 
-    <tbody>
-      {leads.map((l) => (
-        <tr
-          key={l._id}
-          className="border-b hover:bg-white/40 transition-colors"
-        >
-          <td className="p-4 whitespace-nowrap">
-            <div className="font-medium">{l.name}</div>
-          </td>
+                <td className="whitespace-nowrap">
+                  <StageBadge stage={l.stage} />
+                </td>
 
-          <td className="whitespace-nowrap">{l.email}</td>
-          <td className="whitespace-nowrap">{l.phone}</td>
-          <td className="whitespace-nowrap">{l.source || "Website"}</td>
+                <td className="text-sm text-muted whitespace-nowrap">
+                  {new Date(l.createdAt).toLocaleDateString()}
+                </td>
 
-          <td className="whitespace-nowrap">
-            <StageBadge stage={l.stage} />
-          </td>
-
-          <td className="text-sm text-muted whitespace-nowrap">
-            {new Date(l.createdAt).toLocaleDateString()}
-          </td>
-
-          <td className="text-right pr-4 space-x-2 whitespace-nowrap">
-            <Link
-              to={`/leads/${l._id}`}
-              className="px-3 py-1 bg-blue-500 text-white rounded-md"
-            >
-              View
-            </Link>
-            <button
-              onClick={() => setEditing(l)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded-md"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => setConfirm({ open: true, id: l._id })}
-              className="px-3 py-1 bg-red-500 text-white rounded-md"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
-
-
+                <td className="text-right pr-4 space-x-2 whitespace-nowrap">
+                  <Link
+                    to={`/leads/${l._id}`}
+                    className="px-3 py-1 bg-blue-500 text-white rounded-md"
+                  >
+                    View
+                  </Link>
+                  <button
+                    onClick={() => setEditing(l)}
+                    className="px-3 py-1 bg-yellow-500 text-white rounded-md"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setConfirm({ open: true, id: l._id })}
+                    className="px-3 py-1 bg-red-500 text-white rounded-md"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <LeadFormModal
         open={openAdd}

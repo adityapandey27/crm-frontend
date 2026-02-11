@@ -268,7 +268,10 @@ export default function Appointments() {
       
         </select>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2"> */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <span>
+
           <label className="text-sm text-muted">From</label>
           <input
             type="date"
@@ -276,6 +279,9 @@ export default function Appointments() {
             onChange={(e) => {setDateFrom(e.target.value); applyFilters(); }}
             className="rounded px-3 py-2 border bg-white/60 border-white/10"
           />
+          </span>
+          <span>
+
           <label className="text-sm text-muted">To</label>
           <input
             type="date"
@@ -283,6 +289,7 @@ export default function Appointments() {
             onChange={(e) =>{setDateTo(e.target.value); applyFilters(); }}
             className="rounded px-3 py-2 border bg-white/60 border-white/10"
           />
+          </span>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -312,7 +319,7 @@ export default function Appointments() {
       </div>
 
       {/* TABS */}
-      <div className="flex gap-3 text-sm">
+      <div className="flex gap-0.5 text-sm">
         {["all", "today", "tomorrow", "upcoming", "past"].map((t) => (
           <button
             key={t}
@@ -320,7 +327,7 @@ export default function Appointments() {
               setTab(t);
               applyFilters();
             }}
-            className={`px-3 py-2 rounded-full ${
+            className={`px-2.5 py-2 rounded-full ${
               tab === t ? "bg-indigo-600 text-white" : "bg-white/40"
             }`}
           >
@@ -329,11 +336,11 @@ export default function Appointments() {
         ))}
       </div>
 
-      <div className="w-[50%] sm:w-full overflow-auto rounded-2xl glass">
+      <div className="w-[100%] sm:w-[100%] overflow-auto rounded-2xl glass">
         {loading ? (
           <div className="p-6 card-glass">Loading appointments...</div>
         ) : (
-          <table className="min-w-max w-[100%] text-left">
+          <table className=" w-[100%] text-left">
             <thead className="border-b bg-white/50">
               <tr className="text-sm text-muted">
                 <th className="p-4 whitespace-nowrap">Lead</th>
@@ -347,9 +354,7 @@ export default function Appointments() {
             </thead>
 
             {!loading && appointments.length === 0 ? (
-              <div className="p-6 card-glass text-muted">
-                No appointments found
-              </div>
+              ""
             ) : (
               <tbody>
                 {appointments.map((a) => {

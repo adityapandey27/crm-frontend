@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // baseURL: process.env.REACT_APP_API_URL || ' http://localhost:4000/api',
-  baseURL: process.env.REACT_APP_API_URL || 'https://crm-backend-dffk7j03m-aditya-pandeys-projects-891f452f.vercel.app/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://adityapandey27-crm-backend.vercel.app/api',
   
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
@@ -13,7 +13,8 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   try {
     const token = localStorage.getItem('token');
-    if (token) {
+    const user = localStorage.getItem('user');
+    if (token && user) {
       // token might be a plain string or an object, normalize:
       const t = typeof token === 'string' ? token : (token.token || token.accessToken || token);
       config.headers.Authorization = `Bearer ${t}`;
